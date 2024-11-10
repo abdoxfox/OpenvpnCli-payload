@@ -1,7 +1,5 @@
 import socket
 import select 
-import os
-from fcntl import ioctl
 import struct
 import re
 import configparser
