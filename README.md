@@ -7,4 +7,4 @@ need to install python and openvpn-cli
 
 # run script via :
 
-$ sudo bash cmdovpn.sh 
+`sudo bash cmdovpn.sh `
