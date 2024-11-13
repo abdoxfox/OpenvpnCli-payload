@@ -1,6 +1,6 @@
+#pylint:disable=E0001
 import socket
 import select 
-import struct
 import re
 import configparser
 import logging
@@ -27,27 +27,28 @@ def proxy(config):
 	    return (proxyhost,proxyport)
 	    
 
-
 def tunneling(server,client):
-    while True:
+    connected = True
+    while connected :
+    	    #if client:
     	    r,_,x = select.select([server,client],[],[server,client],3)
-    	    client.settimeout(3)
-    	    if r:
+    	    
+    	    
+    	    if r:     
     	        try:
-    	            
-        	        data= r[0].recv(2048)
-        	        dataDecoded = data.decode("utf-8","ignore").split("\r\n")[0]
-        	        if re.match(r'HTTP/\d(\.\d)? ',dataDecoded):
-        	            print(f"\nresponse : {dataDecoded}")
-        	        if r[0] is server:
-        	            client.send(data)
-        	        else:
-        	            server.send(data)
+    	            r[0].settimeout(5)
+    	            data= r[0].recv(2048)
+    	            dataDecoded = data.decode("utf-8","ignore").split("\r\n")[0]
+    	            if re.match(r'HTTP/\d(\.\d)? ',dataDecoded):
+    	                print(dataDecoded)
+    	                client.send(b"HTTP/1.1 200 OK\r\n")
+    	            elif r[0] is server:
+    	                client.send(data)
+    	            else:
+    	                server.send(data)
     	        except Exception as e:
         	        logging.debug(e.args)
-        	        server.close()
-        	        client.close()
-        	        break
+        	        connected = False
     	    
     
 def payloadformating(payload,host_port):
@@ -85,17 +86,18 @@ sock = socket.create_server(("",8889),family=socket.AF_INET6, dualstack_ipv6=Tru
 
 while True :
 	sock2= socket.socket()
-	sock2.settimeout(3)
+	sock2.settimeout(5)
 	cl,ad = sock.accept()
-	cl.settimeout(3)
+	cl.settimeout(5)
 	data_rcv = cl.recv(1024).decode("utf-8","ignore").split("\r\n")[0].split(" ")[1]
 	host_port = (data_rcv.split(":")[0],data_rcv.split(":")[1])
-	print(host_port)
 	payload = payloadformating(getpayload(conf()),host_port)
 	print(f"sending payload : {payload.encode()}")
 	sock2.connect((proxy))
-	sock2.send(payload.encode())
+	sock2.send(payload.encode()) 
 	tunneling(sock2,cl)
+	sock2.close()
+	cl.close()
 	
 	
 	
