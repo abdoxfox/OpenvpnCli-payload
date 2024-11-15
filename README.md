@@ -6,8 +6,15 @@ need to install python and openvpn-cli
 
 
 
-# run script via :
+# run script in windows as admistartor :
+you need to install OpenVPN-GUI
 
 ```
-sudo bash cmdovpn.sh
+OpenVPNRun.bat
+```
+
+# in linux :
+
+```
+sudo bash OpenvpnRun.sh
 ```
