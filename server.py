@@ -82,7 +82,7 @@ def payloadformating(payload,host_port):
 def payloadSend(payload,server):
     payloads = payload.split("=")
     for payload in payloads:
-        if payload in ["1.0","0.1"]:
+        if payload in ["1.0","0.1","1.5"]:
             time.sleep(payload)
         else:
             server.send(payload.encode())
